@@ -114,6 +114,7 @@ CloudFormation do
 
   Resource(:CleanUpBucketOnDelete) {
     Type "Custom::CleanUpBucket"
+    DependsOn :CleanBucketOnDeleteCustomResourceLogGroup
     Property 'ServiceToken', FnGetAtt(:CleanBucketOnDeleteCustomResourceFunction, :Arn)
     Property 'BucketNames', FnSplit(',', Ref(:Buckets))
   }
