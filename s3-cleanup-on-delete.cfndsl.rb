@@ -107,7 +107,7 @@ CloudFormation do
       CODE
     })
     Handler "index.lambda_handler"
-    Runtime "python3.7"
+    Runtime "python3.8"
     Role FnGetAtt(:CleanBucketOnDeleteRole, :Arn)
     Timeout 60
   }
