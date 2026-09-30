@@ -78,6 +78,9 @@ CloudFormation do
         logger.setLevel(logging.INFO)
 
         def lambda_handler(event, context):
+          # Reuse the existing physical id on Update/Delete so CloudFormation
+          # does not treat an update as a replacement and delete the old resource
+          physical_resource_id = event.get('PhysicalResourceId', context.log_stream_name)
           try:
             logger.info(event)
 
@@ -100,10 +103,10 @@ CloudFormation do
                 bucket.objects.all().delete()
               responseData['Message'] = "Resource deletion successful!"
             
-            cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData)
+            cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData, physical_resource_id)
           except Exception as e:
             logger.error('failed to cleanup bucket', exc_info=True)
-            cfnresponse.send(event, context, cfnresponse.FAILED, {})
+            cfnresponse.send(event, context, cfnresponse.FAILED, {}, physical_resource_id)
       CODE
     })
     Handler "index.lambda_handler"
